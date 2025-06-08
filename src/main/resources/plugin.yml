@@ -1,0 +1,7 @@
+main: me.Plugins.TLibs.TLibs
+api-version: 1.20
+name: TLibs
+version: 1.0
+author: Drefvelin
+
+softdepend: [MMOItems, MythicLib, ItemsAdder, LoneLibs, MythicMobs, MMOCore, MCPets]
