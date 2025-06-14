@@ -34,6 +34,7 @@ public class BlockChecker extends TLibAPI{
     	return false;
     }
 	private boolean blockIsFurniture(Block b, String furniture) {
+		if(!b.getType().equals(Material.BARRIER)) return false;
 		if(!(this.getPluginChecker().checkPlugin("ItemsAdder") && this.getPluginChecker().checkPlugin("LoneLibs"))) {
 			Bukkit.getLogger().info("[TLibs] ERROR! This operation requires ItemsAdder and LoneLibs!");
 			return false;
