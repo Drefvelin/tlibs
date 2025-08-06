@@ -1,7 +1,9 @@
 package me.Plugins.TLibs.Objects.API.SubAPI;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -40,6 +42,47 @@ public class ItemCreator extends TLibAPI{
 				return null;
 			}
 			item =  itemManager.getMMOItem(MMOItems.plugin.getTypes().get(s.split("\\.")[1].toUpperCase()), s.split("\\.")[2].toUpperCase()).newBuilder().build(); //m.material.salt
+		} else if (type.equalsIgnoreCase("modeled")) {
+			String raw = s.substring(s.indexOf('(') + 1, s.lastIndexOf(')')); // Extract content inside (...)
+			String[] parts = raw.split(";");
+			Map<String, String> attributes = new HashMap<>();
+
+			for (String part : parts) {
+				String[] keyValue = part.split("=", 2);
+				if (keyValue.length == 2) {
+					attributes.put(keyValue[0].toLowerCase(), keyValue[1]);
+				}
+			}
+
+			// Default to DIRT if invalid type
+			Material material = Material.DIRT;
+			if (attributes.containsKey("type")) {
+				try {
+					material = Material.valueOf(attributes.get("type").toUpperCase());
+				} catch (IllegalArgumentException e) {
+					Bukkit.getLogger().warning("[TLibs] Invalid material type in modeled item: " + attributes.get("type"));
+				}
+			}
+
+			item = new ItemStack(material, 1);
+			ItemMeta meta = item.getItemMeta();
+
+			if (meta != null) {
+				if (attributes.containsKey("name")) {
+					meta.setDisplayName(attributes.get("name"));
+				}
+
+				if (attributes.containsKey("model")) {
+					try {
+						int modelData = Integer.parseInt(attributes.get("model"));
+						meta.setCustomModelData(modelData);
+					} catch (NumberFormatException e) {
+						Bukkit.getLogger().warning("[TLibs] Invalid model data in modeled item: " + attributes.get("model"));
+					}
+				}
+
+				item.setItemMeta(meta);
+			}
 		} else {
 			if(!(this.getPluginChecker().checkPlugin("ItemsAdder") && this.getPluginChecker().checkPlugin("LoneLibs"))) {
 				Bukkit.getLogger().info("[TLibs] ERROR! This operation requires ItemsAdder and LoneLibs!");

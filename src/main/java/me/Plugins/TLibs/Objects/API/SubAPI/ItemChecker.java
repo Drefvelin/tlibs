@@ -1,8 +1,12 @@
 package me.Plugins.TLibs.Objects.API.SubAPI;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import dev.lone.itemsadder.api.CustomStack;
 import io.lumine.mythic.lib.api.item.NBTItem;
@@ -26,6 +30,24 @@ public class ItemChecker extends TLibAPI{
 			CustomStack stack = CustomStack.byItemStack(i);
 			if(stack != null) {
 				path = "ia."+stack.getNamespacedID();
+			}
+		}
+		if (i.hasItemMeta()) {
+			ItemMeta meta = i.getItemMeta();
+			boolean hasName = meta.hasDisplayName();
+			boolean hasModel = meta.hasCustomModelData();
+
+			if (hasName || hasModel) {
+				StringBuilder sb = new StringBuilder("modeled.(");
+				sb.append("type=").append(i.getType().toString().toLowerCase());
+				if (hasName) {
+					sb.append(";name=").append(meta.getDisplayName());
+				}
+				if (hasModel) {
+					sb.append(";model=").append(meta.getCustomModelData());
+				}
+				sb.append(")");
+				return sb.toString();
 			}
 		}
 		return path;
@@ -53,6 +75,53 @@ public class ItemChecker extends TLibAPI{
 			if(stack != null) {
 				if(itemPath.equalsIgnoreCase(stack.getNamespacedID())) return true;
 			}
+		} else if (type.equalsIgnoreCase("modeled")) {
+			if (!item.hasItemMeta()) return false;
+
+			String raw = s.substring(s.indexOf('(') + 1, s.lastIndexOf(')')); // type=emerald;name=§eYellowshard;model=3
+			String[] parts = raw.split(";");
+			Map<String, String> attributes = new HashMap<>();
+
+			for (String part : parts) {
+				String[] keyValue = part.split("=", 2);
+				if (keyValue.length == 2) {
+					attributes.put(keyValue[0].toLowerCase(), keyValue[1]);
+				}
+			}
+
+			// Check type
+			if (attributes.containsKey("type")) {
+				Material material;
+				try {
+					material = Material.valueOf(attributes.get("type").toUpperCase());
+				} catch (IllegalArgumentException e) {
+					return false;
+				}
+				if (item.getType() != material) return false;
+			}
+
+			// Check name
+			if (attributes.containsKey("name")) {
+				String expectedName = attributes.get("name");
+				if (!item.getItemMeta().hasDisplayName()) return false;
+				String actualName = item.getItemMeta().getDisplayName();
+				if (!actualName.equals(expectedName)) return false;
+			}
+
+			// Check model
+			if (attributes.containsKey("model")) {
+				if (!item.getItemMeta().hasCustomModelData()) return false;
+				int expectedModel;
+				try {
+					expectedModel = Integer.parseInt(attributes.get("model"));
+				} catch (NumberFormatException e) {
+					return false;
+				}
+				int actualModel = item.getItemMeta().getCustomModelData();
+				if (actualModel != expectedModel) return false;
+			}
+
+			return true;
 		}
 		return false;
 	}
