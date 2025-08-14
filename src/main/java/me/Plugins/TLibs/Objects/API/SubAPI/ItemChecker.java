@@ -32,7 +32,7 @@ public class ItemChecker extends TLibAPI{
 				path = "ia."+stack.getNamespacedID();
 			}
 		}
-		if (i.hasItemMeta()) {
+		if(path.split("\\.")[0].equalsIgnoreCase("v") && i.hasItemMeta()) {
 			ItemMeta meta = i.getItemMeta();
 			boolean hasName = meta.hasDisplayName();
 			boolean hasModel = meta.hasCustomModelData();
