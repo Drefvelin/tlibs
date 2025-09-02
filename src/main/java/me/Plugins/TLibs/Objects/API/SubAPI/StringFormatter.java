@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -54,6 +56,12 @@ public class StringFormatter {
 		return cleaned.toString();
 	}
 
+	public static String getName(ItemStack i) {
+		ItemMeta m = i.getItemMeta();
+		if(m == null) return "none";
+		if(m.hasDisplayName()) return m.getDisplayName();
+		return getVanillaName(i.getType());
+	}
 
 	public static String getVanillaName(Material material) {
 		String[] words = material.name().toLowerCase().split("_");
