@@ -84,7 +84,7 @@ public class ItemCreator extends TLibAPI{
 				item.setItemMeta(meta);
 			}
 		} else {
-			if(!(this.getPluginChecker().checkPlugin("ItemsAdder") && this.getPluginChecker().checkPlugin("LoneLibs"))) {
+			if(!(this.getPluginChecker().checkPlugin("ItemsAdder"))) {
 				Bukkit.getLogger().info("[TLibs] ERROR! This operation requires ItemsAdder and LoneLibs!");
 				return new ItemStack(Material.DIRT, 1);
 			}

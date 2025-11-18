@@ -5,4 +5,4 @@ version: 1.0
 author: Drefvelin
 folia-supported: true
 
-softdepend: [MMOItems, MythicLib, ItemsAdder, LoneLibs, MythicMobs, MMOCore, MCPets]
+softdepend: [MMOItems, MythicLib, ItemsAdder, MythicMobs, MMOCore, MCPets]

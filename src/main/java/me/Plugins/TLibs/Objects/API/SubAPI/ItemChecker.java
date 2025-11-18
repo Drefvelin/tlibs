@@ -12,6 +12,7 @@ import dev.lone.itemsadder.api.CustomStack;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import me.Plugins.TLibs.Objects.TLibAPI;
 import me.Plugins.TLibs.Objects.API.ItemAPI;
+import net.tfminecraft.cooking.item.FoodItem;
 
 public class ItemChecker extends TLibAPI{
 	public ItemChecker(ItemAPI api) {
@@ -26,11 +27,14 @@ public class ItemChecker extends TLibAPI{
 				path = "m."+nbt.getType().toLowerCase()+"."+nbt.getString("MMOITEMS_ITEM_ID").toLowerCase();
 			}
 		}
-		if(this.getPluginChecker().checkPlugin("ItemsAdder") && this.getPluginChecker().checkPlugin("LoneLibs")) {
+		if(this.getPluginChecker().checkPlugin("ItemsAdder")) {
 			CustomStack stack = CustomStack.byItemStack(i);
 			if(stack != null) {
 				path = "ia."+stack.getNamespacedID();
 			}
+		}
+		if(FoodItem.fromItem(i) != null) {
+			return FoodItem.fromItem(i).toString(); //TODO real thing, this doesnt work lol
 		}
 		if(path.split("\\.")[0].equalsIgnoreCase("v") && i.hasItemMeta()) {
 			ItemMeta meta = i.getItemMeta();
@@ -66,7 +70,7 @@ public class ItemChecker extends TLibAPI{
 			if(!nbt.hasType()) return false;
 			if(nbt.getType().equalsIgnoreCase(s.split("\\.")[1]) && nbt.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(s.split("\\.")[2])) return true;
 		} else if(type.equalsIgnoreCase("ia")) {
-			if(!(this.getPluginChecker().checkPlugin("ItemsAdder") && this.getPluginChecker().checkPlugin("LoneLibs"))) {
+			if(!(this.getPluginChecker().checkPlugin("ItemsAdder"))) {
 				Bukkit.getLogger().info("[TLibs] ERROR! This operation requires ItemsAdder and LoneLibs!");
 				return false;
 			}
@@ -122,6 +126,9 @@ public class ItemChecker extends TLibAPI{
 			}
 
 			return true;
+		} else if (type.equalsIgnoreCase("c")) {
+			FoodItem food = FoodItem.fromItem(item);
+			return food.getCategory().equalsIgnoreCase(s.split("\\.")[1]);
 		}
 		return false;
 	}
