@@ -128,6 +128,7 @@ public class ItemChecker extends TLibAPI{
 			return true;
 		} else if (type.equalsIgnoreCase("c")) {
 			FoodItem food = FoodItem.fromItem(item);
+			if(food == null) return false;
 			return food.getCategory().equalsIgnoreCase(s.split("\\.")[1]);
 		}
 		return false;
