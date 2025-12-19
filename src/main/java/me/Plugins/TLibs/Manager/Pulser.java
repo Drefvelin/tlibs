@@ -9,8 +9,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import ia.m.is;
+import io.lumine.mythic.bukkit.utils.lib.jooq.impl.QOM.In;
 
 import java.util.List;
 
@@ -21,7 +25,6 @@ public class Pulser implements Listener {
 
     @EventHandler
     public void onOpen(InventoryOpenEvent event) {
-
         Inventory inv = event.getInventory();
         if (inv != null) {
             scanInventory((Player) event.getPlayer(), inv);
@@ -69,6 +72,13 @@ public class Pulser implements Listener {
 
     private void scanInventory(Player player, Inventory inventory) {
         if (inventory == null) return;
+        InventoryHolder holder = inventory.getHolder();
+        if (holder != null &&
+            !(holder instanceof org.bukkit.block.BlockState) &&  // chests, barrels, etc
+            !(holder instanceof org.bukkit.entity.Entity) &&     // horses, etc
+            !(holder instanceof Player)) {                       // player crafting
+            return;
+        }
 
         for (int slot = 0; slot < inventory.getSize(); slot++) {
             ItemStack item = inventory.getItem(slot);

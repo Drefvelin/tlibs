@@ -127,10 +127,45 @@ public class ItemChecker extends TLibAPI{
 
 			return true;
 		} else if (type.equalsIgnoreCase("c")) {
-			FoodItem food = FoodItem.fromItem(item);
-			if(food == null) return false;
-			return food.getCategory().equalsIgnoreCase(s.split("\\.")[1]);
+
+			FoodItem fi = FoodItem.fromItem(item);
+			if (fi == null) return false;
+
+			// Remove the leading "c."
+			String raw = s.substring(2);
+
+			String category;
+			String typeFilter = null;
+
+			// Check if parentheses exist
+			if (raw.contains("(") && raw.endsWith(")")) {
+
+				// category before "("
+				category = raw.substring(0, raw.indexOf("("));
+
+				// inside the parentheses: "type=something"
+				String inside = raw.substring(raw.indexOf("(") + 1, raw.length() - 1);
+
+				// expected: type=<value>
+				if (inside.startsWith("type=")) {
+					typeFilter = inside.substring(5);
+				}
+
+			} else {
+				// Simple c.category
+				category = raw;
+			}
+
+			// First check category
+			if (!fi.getCategory().equalsIgnoreCase(category)) return false;
+
+			// If no type filter, category match is enough
+			if (typeFilter == null) return true;
+
+			// Type must also match
+			return fi.getId().equalsIgnoreCase(typeFilter);
 		}
+
 		return false;
 	}
 	

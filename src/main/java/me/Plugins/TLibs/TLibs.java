@@ -3,6 +3,7 @@ package me.Plugins.TLibs;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.Plugins.TLibs.Armour.ArmorEquipEvent;
 import me.Plugins.TLibs.Enums.APIType;
 import me.Plugins.TLibs.Manager.Pulser;
 import me.Plugins.TLibs.Objects.TLibAPI;
@@ -23,7 +24,8 @@ public class TLibs extends JavaPlugin{
 		initializeAPIs();
 		pulser.start();
 		getServer().getPluginManager().registerEvents(pulser, this);
-	
+		ArmorEquipEvent.registerListener(this);
+		
 		Bukkit.getLogger().info("[TLibs] Complete!");
 	}
 	private void initializeAPIs() {
