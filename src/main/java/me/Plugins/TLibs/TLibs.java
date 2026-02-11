@@ -5,7 +5,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.Plugins.TLibs.Armour.ArmorEquipEvent;
 import me.Plugins.TLibs.Enums.APIType;
-import me.Plugins.TLibs.Manager.Pulser;
 import me.Plugins.TLibs.Objects.TLibAPI;
 import me.Plugins.TLibs.Objects.API.BlockAPI;
 import me.Plugins.TLibs.Objects.API.ItemAPI;
@@ -14,7 +13,6 @@ public class TLibs extends JavaPlugin{
 	private static TLibs instance;
 	private final static BlockAPI bApi = new BlockAPI();
 	private final static ItemAPI iApi = new ItemAPI();
-	private final Pulser pulser = new Pulser();
 	
 	@Override
 	public void onEnable() {
@@ -22,8 +20,6 @@ public class TLibs extends JavaPlugin{
 		Bukkit.getLogger().info("[TLibs] Initializing...");
 		
 		initializeAPIs();
-		pulser.start();
-		getServer().getPluginManager().registerEvents(pulser, this);
 		ArmorEquipEvent.registerListener(this);
 		
 		Bukkit.getLogger().info("[TLibs] Complete!");
