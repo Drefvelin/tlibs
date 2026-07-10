@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.Plugins.TLibs.Armour.ArmorEquipEvent;
 import me.Plugins.TLibs.Enums.APIType;
+import me.Plugins.TLibs.Listener.FurnitureRepairListener;
 import me.Plugins.TLibs.Objects.TLibAPI;
 import me.Plugins.TLibs.Objects.API.BlockAPI;
 import me.Plugins.TLibs.Objects.API.ItemAPI;
@@ -21,6 +22,7 @@ public class TLibs extends JavaPlugin{
 		
 		initializeAPIs();
 		ArmorEquipEvent.registerListener(this);
+		Bukkit.getPluginManager().registerEvents(new FurnitureRepairListener(), this);
 		
 		Bukkit.getLogger().info("[TLibs] Complete!");
 	}

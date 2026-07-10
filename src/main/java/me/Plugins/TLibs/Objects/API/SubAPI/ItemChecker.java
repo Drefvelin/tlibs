@@ -33,8 +33,10 @@ public class ItemChecker extends TLibAPI{
 				path = "ia."+stack.getNamespacedID();
 			}
 		}
-		if(FoodItem.fromItem(i) != null) {
+		if(this.getPluginChecker().checkPlugin("Cooking")) {
+			if(FoodItem.fromItem(i) != null) {
 			return FoodItem.fromItem(i).toString(); //TODO real thing, this doesnt work lol
+			}
 		}
 		if(path.split("\\.")[0].equalsIgnoreCase("v") && i.hasItemMeta()) {
 			ItemMeta meta = i.getItemMeta();
