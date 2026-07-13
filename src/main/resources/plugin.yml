@@ -6,3 +6,12 @@ author: Drefvelin
 folia-supported: true
 
 softdepend: [MMOItems, MythicLib, ItemsAdder, MythicMobs, MMOCore, MCPets]
+
+commands:
+  tlibs:
+    description: TLibs admin commands
+    permission: tlibs.admin
+
+permissions:
+  tlibs.admin:
+    default: op

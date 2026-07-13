@@ -3,7 +3,7 @@ package me.Plugins.TLibs.Objects.API.SubAPI;
 
 import java.util.Optional;
 
-import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -11,9 +11,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import de.tr7zw.nbtapi.NBT;
-import io.lumine.mythic.lib.api.item.ItemTag;
-import io.lumine.mythic.lib.api.item.NBTItem;
 import me.Plugins.TLibs.TLibs;
 import me.Plugins.TLibs.Enums.APIType;
 import me.Plugins.TLibs.Objects.TLibAPI;
@@ -63,40 +60,30 @@ public class ArmorMerger extends TLibAPI{
 			if(s.split("\\.")[0].equalsIgnoreCase("ia")) {
 				String namespace = s.split("\\.")[1].split("\\:")[0];
 				String id = s.split("\\.")[1].split("\\:")[1];
-				NBTItem mnbt = NBTItem.get(item);
-				mnbt.addTag(new ItemTag("ia", namespace+"."+id));
-				item = mnbt.toItem();
+				item = ItemSkinPreserver.writeIaTag(item, namespace, id);
 			}
 		}
 		if(skin.getItemMeta().hasCustomModelData()) {
-			NBTItem mnbt = NBTItem.get(item);
-			mnbt.addTag(new ItemTag("amodel", String.valueOf(skin.getItemMeta().getCustomModelData())));
-			item = mnbt.toItem();
+			item = ItemSkinPreserver.writeAmodel(item, skin.getItemMeta().getCustomModelData());
 		}
-		item.setType(skin.getType());
 		ItemMeta skinMeta = skin.getItemMeta();
-		ItemMeta m = item.getItemMeta();
-		if(name.isPresent()) {
-			m.setDisplayName(name.get());
+		Color leatherColor = null;
+		if(skin.getType().toString().toLowerCase().contains("leather") && skinMeta instanceof LeatherArmorMeta ls) {
+			leatherColor = ls.getColor();
 		}
-		if(skinMeta.hasCustomModelData()) m.setCustomModelData(skinMeta.getCustomModelData());
-		
-		if(skin.getType().toString().toLowerCase().contains("leather")) {
-			LeatherArmorMeta ls = (LeatherArmorMeta) skinMeta;
-			LeatherArmorMeta lm = (LeatherArmorMeta) m;
-			lm.setColor(ls.getColor());
-			item.setItemMeta(lm);
-			if(s.split("\\.")[0].equalsIgnoreCase("ia")) {
-				String namespace = s.split("\\.")[1].split("\\:")[0];
-				String id = s.split("\\.")[1].split("\\:")[1];
-				NBT.modify(item, nbt ->{
-					nbt.getOrCreateCompound("itemsadder");
-					nbt.getCompound("itemsadder").setString("namespace", namespace);
-					nbt.getCompound("itemsadder").setString("id", id);
-				});
+		Integer cmd = skinMeta.hasCustomModelData() ? skinMeta.getCustomModelData() : null;
+		ItemSkinPreserver.applyAppearance(item, skin.getType(), cmd, leatherColor);
+		if(name.isPresent()) {
+			ItemMeta m = item.getItemMeta();
+			if (m != null) {
+				m.setDisplayName(name.get());
+				item.setItemMeta(m);
 			}
-		} else {
-			item.setItemMeta(m);
+		}
+		if(s.split("\\.")[0].equalsIgnoreCase("ia")) {
+			String namespace = s.split("\\.")[1].split("\\:")[0];
+			String id = s.split("\\.")[1].split("\\:")[1];
+			ItemSkinPreserver.writeItemsAdderCompound(item, namespace, id);
 		}
 		return item;
 	}

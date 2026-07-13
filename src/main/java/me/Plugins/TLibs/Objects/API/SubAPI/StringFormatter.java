@@ -1,5 +1,6 @@
 package me.Plugins.TLibs.Objects.API.SubAPI;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +36,95 @@ public class StringFormatter {
 			}
 		}
 		return formatted;
+	}
+
+	/**
+	 * Applies solid or gradient colour to plain text.
+	 *
+	 * @param text visible text without colour codes
+	 * @param hexCodes one or more hex strings ({@code #RRGGBB} or {@code RRGGBB}); null/empty returns text unchanged
+	 * @return legacy chat string with colour applied per character (gradient) or once (solid)
+	 */
+	public static String applyColourGradient(String text, List<String> hexCodes) {
+		if (text == null || text.isEmpty()) {
+			return "";
+		}
+		String plain = ChatColor.stripColor(text);
+		if (plain.isEmpty()) {
+			return "";
+		}
+		if (hexCodes == null || hexCodes.isEmpty()) {
+			return plain;
+		}
+
+		List<String> normalized = new ArrayList<>();
+		for (String code : hexCodes) {
+			String hex = normalizeHex(code);
+			if (hex != null) {
+				normalized.add(hex);
+			}
+		}
+		if (normalized.isEmpty()) {
+			return plain;
+		}
+		if (normalized.size() == 1) {
+			return ChatColor.of(normalized.get(0)) + plain;
+		}
+
+		StringBuilder out = new StringBuilder(plain.length() * 8);
+		int length = plain.length();
+		int stops = normalized.size();
+		for (int i = 0; i < length; i++) {
+			double t = length == 1 ? 0.0 : (double) i / (length - 1);
+			int segment = (int) Math.floor(t * (stops - 1));
+			if (segment >= stops - 1) {
+				segment = stops - 2;
+			}
+			double localT = t * (stops - 1) - segment;
+			int[] rgb = lerpRgb(parseRgb(normalized.get(segment)), parseRgb(normalized.get(segment + 1)), localT);
+			out.append(ChatColor.of(rgbToHex(rgb)));
+			out.append(plain.charAt(i));
+		}
+		return out.toString();
+	}
+
+	private static String normalizeHex(String code) {
+		if (code == null) {
+			return null;
+		}
+		String trimmed = code.trim();
+		if (trimmed.isEmpty()) {
+			return null;
+		}
+		if (!trimmed.startsWith("#")) {
+			trimmed = "#" + trimmed;
+		}
+		if (!trimmed.matches("^#[0-9a-fA-F]{6}$")) {
+			return null;
+		}
+		return trimmed.toLowerCase();
+	}
+
+	private static int[] parseRgb(String hex) {
+		int value = Integer.parseInt(hex.substring(1), 16);
+		return new int[] {
+				(value >> 16) & 0xFF,
+				(value >> 8) & 0xFF,
+				value & 0xFF
+		};
+	}
+
+	private static int[] lerpRgb(int[] from, int[] to, double t) {
+		double clamped = Math.max(0.0, Math.min(1.0, t));
+		return new int[] {
+				(int) Math.round(from[0] + (to[0] - from[0]) * clamped),
+				(int) Math.round(from[1] + (to[1] - from[1]) * clamped),
+				(int) Math.round(from[2] + (to[2] - from[2]) * clamped)
+		};
+	}
+
+	private static String rgbToHex(int[] rgb) {
+		return String.format("#%02x%02x%02x", rgb[0], rgb[1], rgb[2]);
 	}
 
 	public static String clean(String s) {

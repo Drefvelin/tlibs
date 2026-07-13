@@ -1,0 +1,127 @@
+mmo-item-rebuild:
+  enabled: true
+  copy-persistent-data: true
+  copy-appearance: true
+  preserve-nbt:
+    - ia
+    - amodel
+    - itemsadder
+  debug-nbt: true
+
+tiered-sockets:
+  enabled: true
+
+socket-tier-groups:
+  gemstones:
+    "Basic Gemstone": 1
+    "Polished Gemstone": 2
+    "Radiant Gemstone": 3
+    "Mythical Gemstone": 4
+
+  mage_armor_runes:
+    "Common Mage Armor Rune": 1
+    "Rare Mage Armor Rune": 2
+    "Epic Mage Armor Rune": 3
+    "Legendary Mage Armor Rune": 4
+
+  staff_projectile_runes:
+    "Common Staff Projectile Rune": 1
+    "Rare Staff Projectile Rune": 2
+    "Epic Staff Projectile Rune": 3
+    "Legendary Staff Projectile Rune": 4
+
+  staff_support_runes:
+    "Common Staff Support Rune": 1
+    "Rare Staff Support Rune": 2
+    "Epic Staff Support Rune": 3
+    "Legendary Staff Support Rune": 4
+
+  staff_minor_spell_runes:
+    "Common Staff Minor Spell Rune": 1
+    "Rare Staff Minor Spell Rune": 2
+    "Epic Staff Minor Spell Rune": 3
+    "Legendary Staff Minor Spell Rune": 4
+
+  staff_major_spell_runes:
+    "Common Staff Major Spell Rune": 1
+    "Rare Staff Major Spell Rune": 2
+    "Epic Staff Major Spell Rune": 3
+    "Legendary Staff Major Spell Rune": 4
+
+  sword_support_runes:
+    "Common Sword Support Rune": 1
+    "Rare Sword Support Rune": 2
+    "Epic Sword Support Rune": 3
+    "Legendary Sword Support Rune": 4
+
+  sword_spell_runes:
+    "Common Sword Spell Rune": 1
+    "Rare Sword Spell Rune": 2
+    "Epic Sword Spell Rune": 3
+    "Legendary Sword Spell Rune": 4
+
+  wand_minor_spell_runes:
+    "Common Wand Minor Spell Rune": 1
+    "Rare Wand Minor Spell Rune": 2
+    "Epic Wand Minor Spell Rune": 3
+    "Legendary Wand Minor Spell Rune": 4
+
+  wand_major_spell_runes:
+    "Common Wand Major Spell Rune": 1
+    "Rare Wand Major Spell Rune": 2
+    "Epic Wand Major Spell Rune": 3
+    "Legendary Wand Major Spell Rune": 4
+
+  spiritual_staff_projectile_runes:
+    "Spiritual Staff Projectile Rune": 1
+  spiritual_staff_support_runes:
+    "Spiritual Staff Support Rune": 1
+  spiritual_staff_minor_spell_runes:
+    "Spiritual Staff Minor Spell Rune": 1
+  spiritual_staff_major_spell_runes:
+    "Spiritual Staff Major Spell Rune": 1
+
+  illusion_staff_projectile_runes:
+    "Illusion Staff Projectile Rune": 1
+  illusion_staff_support_runes:
+    "Illusion Staff Support Rune": 1
+  illusion_staff_minor_spell_runes:
+    "Illusion Staff Minor Spell Rune": 1
+  illusion_staff_major_spell_runes:
+    "Illusion Staff Major Spell Rune": 1
+
+  bloodmagic_staff_projectile_runes:
+    "Bloodmagic Staff Projectile Rune": 1
+  bloodmagic_staff_support_runes:
+    "Bloodmagic Staff Support Rune": 1
+  bloodmagic_staff_minor_spell_runes:
+    "Bloodmagic Staff Minor Spell Rune": 1
+  bloodmagic_staff_major_spell_runes:
+    "Bloodmagic Staff Major Spell Rune": 1
+
+  necromancy_staff_projectile_runes:
+    "Necromancy Staff Projectile Rune": 1
+  necromancy_staff_support_runes:
+    "Necromancy Staff Support Rune": 1
+  necromancy_staff_minor_spell_runes:
+    "Necromancy Staff Minor Spell Rune": 1
+  necromancy_staff_major_spell_runes:
+    "Necromancy Staff Major Spell Rune": 1
+
+  shadowmancy_staff_projectile_runes:
+    "Shadowmancy Staff Projectile Rune": 1
+  shadowmancy_staff_support_runes:
+    "Shadowmancy Staff Support Rune": 1
+  shadowmancy_staff_minor_spell_runes:
+    "Shadowmancy Staff Minor Spell Rune": 1
+  shadowmancy_staff_major_spell_runes:
+    "Shadowmancy Staff Major Spell Rune": 1
+
+  arcanum_staff_projectile_runes:
+    "Arcanum Staff Projectile Rune": 1
+  arcanum_staff_support_runes:
+    "Arcanum Staff Support Rune": 1
+  arcanum_staff_minor_spell_runes:
+    "Arcanum Staff Minor Spell Rune": 1
+  arcanum_staff_major_spell_runes:
+    "Arcanum Staff Major Spell Rune": 1
