@@ -96,6 +96,20 @@ public class StringFormatter {
 		if (trimmed.isEmpty()) {
 			return null;
 		}
+		// Legacy §c / &c → fixed hex
+		if (trimmed.length() == 2
+			&& (trimmed.charAt(0) == '\u00A7' || trimmed.charAt(0) == '&')) {
+			String mapped = legacyColourToHex(trimmed.charAt(1));
+			if (mapped != null) {
+				return mapped;
+			}
+		}
+		if (trimmed.length() == 1) {
+			String mapped = legacyColourToHex(trimmed.charAt(0));
+			if (mapped != null) {
+				return mapped;
+			}
+		}
 		if (!trimmed.startsWith("#")) {
 			trimmed = "#" + trimmed;
 		}
@@ -103,6 +117,91 @@ public class StringFormatter {
 			return null;
 		}
 		return trimmed.toLowerCase();
+	}
+
+	/** Maps legacy colour code char to {@code #RRGGBB}, or null if unknown. */
+	public static String legacyColourToHex(char code) {
+		switch (Character.toLowerCase(code)) {
+			case '0': return "#000000";
+			case '1': return "#0000aa";
+			case '2': return "#00aa00";
+			case '3': return "#00aaaa";
+			case '4': return "#aa0000";
+			case '5': return "#aa00aa";
+			case '6': return "#ffaa00";
+			case '7': return "#aaaaaa";
+			case '8': return "#555555";
+			case '9': return "#5555ff";
+			case 'a': return "#55ff55";
+			case 'b': return "#55ffff";
+			case 'c': return "#ff5555";
+			case 'd': return "#ff55ff";
+			case 'e': return "#ffff55";
+			case 'f': return "#ffffff";
+			default: return null;
+		}
+	}
+
+	/**
+	 * Normalize a colour token ({@code #RRGGBB}, {@code §c}, {@code &c}) to hex, or null.
+	 */
+	public static String normalizeColourToken(String token) {
+		return normalizeHex(token);
+	}
+
+	/**
+	 * Apply optional style codes (bold/italic/underline/strikethrough) before coloured text.
+	 */
+	public static String applyNameStyles(String colouredText, List<String> styles) {
+		if (colouredText == null) {
+			return "";
+		}
+		if (styles == null || styles.isEmpty()) {
+			return colouredText;
+		}
+		StringBuilder prefix = new StringBuilder();
+		for (String style : styles) {
+			if (style == null) {
+				continue;
+			}
+			switch (style.trim().toLowerCase()) {
+				case "bold":
+					prefix.append(ChatColor.BOLD);
+					break;
+				case "italic":
+					prefix.append(ChatColor.ITALIC);
+					break;
+				case "underline":
+				case "underlined":
+					prefix.append(ChatColor.UNDERLINE);
+					break;
+				case "strikethrough":
+				case "strike":
+					prefix.append(ChatColor.STRIKETHROUGH);
+					break;
+				default:
+					break;
+			}
+		}
+		return prefix + colouredText;
+	}
+
+	/**
+	 * Format plain name with colour stop(s) and optional styles.
+	 */
+	public static String formatDisplayName(String plainName, List<String> colourTokens, List<String> styles) {
+		String plain = plainName == null ? "" : plainName;
+		List<String> hexes = new ArrayList<>();
+		if (colourTokens != null) {
+			for (String token : colourTokens) {
+				String hex = normalizeColourToken(token);
+				if (hex != null) {
+					hexes.add(hex);
+				}
+			}
+		}
+		String coloured = hexes.isEmpty() ? plain : applyColourGradient(plain, hexes);
+		return applyNameStyles(coloured, styles);
 	}
 
 	private static int[] parseRgb(String hex) {

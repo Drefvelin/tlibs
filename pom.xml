@@ -11,98 +11,76 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Same layout as ArmourShop / Guides -->
+        <tfmc.refs>D:/Documents/TFMC/ReferenceLibs</tfmc.refs>
+        <tfmc.builds>D:/Documents/TFMC/Builds/TLibs</tfmc.builds>
+        <tfmc.plugins>D:/Documents/TFMC/Workspace/plugins</tfmc.plugins>
     </properties>
-
-    <repositories>
-        <!-- CodeMC -->
-        <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.io/repository/maven-public/</url>
-            <layout>default</layout>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.14.0</version> <!-- or latest -->
+            <version>3.14.0</version>
         </dependency>
         <dependency>
             <groupId>local</groupId>
-            <artifactId>Bungeecord</artifactId>
-            <version>1.0</version>
+            <artifactId>spigot-api</artifactId>
+            <version>1.21.8</version>
             <scope>system</scope>
-            <systemPath>D:/Dokumenter/My Plugins/Reference Libs/Bungeecord.jar</systemPath>
+            <systemPath>${tfmc.refs}/spigot-api.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-chat</artifactId>
+            <version>1.20-R0.1</version>
+            <scope>system</scope>
+            <systemPath>${tfmc.refs}/BungeeCord.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>local</groupId>
-            <artifactId>LoneLibs</artifactId>
+            <artifactId>ItemsAdder</artifactId>
             <version>3.5.0</version>
             <scope>system</scope>
-            <systemPath>D:/Dokumenter/My Plugins/Reference Libs/ItemsAdder_3.5.0-r2.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>local</groupId>
-            <artifactId>MythicMobs</artifactId>
-            <version>5.8.0</version>
-            <scope>system</scope>
-            <systemPath>D:/Dokumenter/My Plugins/Reference Libs/MythicMobs-5.8.0-SNAPSHOT.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>local</groupId>
-            <artifactId>ModelEngine</artifactId>
-            <version>4.0.8</version>
-            <scope>system</scope>
-            <systemPath>D:/Dokumenter/My Plugins/Reference Libs/ModelEngine-4.0.8.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>local</groupId>
-            <artifactId>MMOCore</artifactId>
-            <version>1.11.3</version>
-            <scope>system</scope>
-            <systemPath>D:/Dokumenter/My Plugins/Reference Libs/MMOCore-1.11.3.jar</systemPath>
+            <systemPath>${tfmc.refs}/ItemsAdder_3.5.0-r2.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>local</groupId>
             <artifactId>MMOItems</artifactId>
             <version>6.10</version>
             <scope>system</scope>
-            <systemPath>D:/Dokumenter/My Plugins/Reference Libs/MMOItems-6.10.jar</systemPath>
+            <systemPath>${tfmc.refs}/MMOItems-6.10.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>local</groupId>
             <artifactId>MythicLib</artifactId>
-            <version>1.6.1</version>
+            <version>1.7</version>
             <scope>system</scope>
-            <systemPath>D:/Dokumenter/My Plugins/Reference Libs/MythicLib-1.7.jar</systemPath>
+            <systemPath>${tfmc.refs}/MythicLib-1.7.jar</systemPath>
         </dependency>
+        <!-- Compile-time only; NBT-API plugin provides at runtime -->
         <dependency>
             <groupId>local</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.20.2-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>D:/Dokumenter/My Plugins/Reference Libs/spigot-api-1.20.2-R0.1-SNAPSHOT.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>de.tr7zw</groupId>
             <artifactId>item-nbt-api-plugin</artifactId>
             <version>2.15.0</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${tfmc.refs}/item-nbt-api-plugin-2.15.0.jar</systemPath>
         </dependency>
+        <!-- Compile-time only; jars live with server plugins -->
         <dependency>
             <groupId>local</groupId>
             <artifactId>GunsAndGadgets</artifactId>
-            <version>1.0</version>
+            <version>1.0.2</version>
             <scope>system</scope>
-            <systemPath>D:/Dokumenter/My Plugins/TFMC/GunsAndGadgets/gunsandgadgets-0.1.1-BETA.jar</systemPath>
+            <systemPath>${tfmc.plugins}/gunsandgadgets-1.0.2.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>local</groupId>
             <artifactId>Cooking</artifactId>
-            <version>1.0</version>
+            <version>0.1.4</version>
             <scope>system</scope>
-            <systemPath>D:/Dokumenter/My Plugins/TFMC/Cooking/cooking-0.0.5-ALPHA.jar</systemPath>
+            <systemPath>${tfmc.plugins}/cooking-0.1.4-ALPHA.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -143,14 +121,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals><goal>run</goal></goals>
                         <configuration>
                             <target>
+                                <mkdir dir="${tfmc.builds}"/>
                                 <copy file="${project.build.directory}/TLibs.jar"
-                                    tofile="D:/Dokumenter/My Plugins/TFMC/TLibs/TLibs.jar"/>
+                                    tofile="${tfmc.builds}/TLibs.jar"/>
                             </target>
                         </configuration>
                     </execution>
