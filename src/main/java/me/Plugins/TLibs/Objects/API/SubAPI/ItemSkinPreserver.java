@@ -125,17 +125,23 @@ public final class ItemSkinPreserver {
 	}
 
 	private static String[] readItemsAdderCompound(ItemStack item) {
-		ReadableNBT[] result = new ReadableNBT[1];
+		String[] parts = new String[2];
+		boolean[] found = { false };
 		NBT.get(item, nbt -> {
-			if (nbt.hasTag("itemsadder")) {
-				result[0] = nbt.getCompound("itemsadder");
+			if (!nbt.hasTag("itemsadder")) {
+				return;
 			}
+			ReadableNBT compound = nbt.getCompound("itemsadder");
+			if (compound == null
+				|| !compound.hasTag("namespace")
+				|| !compound.hasTag("id")) {
+				return;
+			}
+			parts[0] = compound.getString("namespace");
+			parts[1] = compound.getString("id");
+			found[0] = true;
 		});
-		ReadableNBT compound = result[0];
-		if (compound == null || !compound.hasTag("namespace") || !compound.hasTag("id")) {
-			return null;
-		}
-		return new String[] { compound.getString("namespace"), compound.getString("id") };
+		return found[0] ? parts : null;
 	}
 
 	private static String[] parseIaTag(NBTItem nbt) {

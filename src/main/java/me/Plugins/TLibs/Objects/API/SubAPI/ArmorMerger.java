@@ -47,13 +47,24 @@ public class ArmorMerger extends TLibAPI{
 				return item;
 			}
 			ItemMeta m = item.getItemMeta();
+			if (m == null) {
+				return item;
+			}
 			NamespacedKey skinKey = new NamespacedKey(GunsAndGadgets.getInstance(), "skin_id");
-            m.getPersistentDataContainer().set(skinKey, PersistentDataType.STRING, gunskin.getId());
+			m.getPersistentDataContainer().set(skinKey, PersistentDataType.STRING, gunskin.getId());
 			item.setItemMeta(m);
 			int bullets = m.getPersistentDataContainer()
-            	.getOrDefault(new NamespacedKey(GunsAndGadgets.getInstance(), "bullets_loaded"), PersistentDataType.INTEGER, 0);
-			if(bullets > 0) GunsAndGadgets.getInstance().getGunManager().applyModel(skin, gunskin, SkinState.AIM);
-			else GunsAndGadgets.getInstance().getGunManager().applyModel(skin, gunskin, SkinState.CARRY);
+				.getOrDefault(new NamespacedKey(GunsAndGadgets.getInstance(), "bullets_loaded"), PersistentDataType.INTEGER, 0);
+			SkinState state = bullets > 0 ? SkinState.AIM : SkinState.CARRY;
+			item = GunsAndGadgets.getInstance().getGunManager().applyModel(item, gunskin, state);
+			if(name.isPresent()) {
+				ItemMeta named = item.getItemMeta();
+				if (named != null) {
+					named.setDisplayName(name.get());
+					item.setItemMeta(named);
+				}
+			}
+			return item;
 		} else {
 			skin = api.getCreator().getItemFromPath(s);
 

@@ -14,28 +14,35 @@ import net.md_5.bungee.api.ChatColor;
 public class StringFormatter {
 	
 	public static String formatHex(String s) {
-		String formatted = "";
-		List<String> split = List.of(s.split(""));
-		for(int i = 0; i<split.size(); i++) {
-			String bit = split.get(i);
-			if(!bit.equalsIgnoreCase("#")) {
-				formatted = formatted+bit;
-			} else {
-				String code = "#";
-				int c = 0;
-				while(c < 6 && i<split.size()) {
-					i++;
-					code = code+split.get(i);
-					c++;
-				}
-				try {
-					formatted = formatted+ChatColor.of(code);
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
+		if (s == null || s.isEmpty()) {
+			return "";
+		}
+		// Legacy & codes → section sign (ItemCreator / kit lore / names all go through here)
+		String formatted = org.bukkit.ChatColor.translateAlternateColorCodes('&', s);
+		StringBuilder out = new StringBuilder(formatted.length() + 16);
+		for (int i = 0; i < formatted.length(); i++) {
+			char bit = formatted.charAt(i);
+			if (bit != '#') {
+				out.append(bit);
+				continue;
+			}
+			if (i + 6 >= formatted.length()) {
+				out.append(bit);
+				continue;
+			}
+			String code = formatted.substring(i, i + 7);
+			if (!code.substring(1).matches("[0-9a-fA-F]{6}")) {
+				out.append(bit);
+				continue;
+			}
+			try {
+				out.append(ChatColor.of(code));
+				i += 6;
+			} catch (Exception e) {
+				out.append(bit);
 			}
 		}
-		return formatted;
+		return out.toString();
 	}
 
 	/**
@@ -190,7 +197,8 @@ public class StringFormatter {
 	 * Format plain name with colour stop(s) and optional styles.
 	 */
 	public static String formatDisplayName(String plainName, List<String> colourTokens, List<String> styles) {
-		String plain = plainName == null ? "" : plainName;
+		// Resolve & / # in the raw name first (same path as ItemCreator lore/names).
+		String plain = formatHex(plainName == null ? "" : plainName);
 		List<String> hexes = new ArrayList<>();
 		if (colourTokens != null) {
 			for (String token : colourTokens) {
