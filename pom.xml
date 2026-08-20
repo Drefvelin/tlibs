@@ -12,10 +12,10 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Same layout as ArmourShop / Guides -->
-        <tfmc.refs>D:/Documents/TFMC/ReferenceLibs</tfmc.refs>
-        <tfmc.builds>D:/Documents/TFMC/Builds/TLibs</tfmc.builds>
-        <tfmc.plugins>D:/Documents/TFMC/Workspace/plugins</tfmc.plugins>
+        <tfmc.refs>D:/Dokumenter/My Plugins/Reference Libs</tfmc.refs>
+        <tfmc.builds>D:/Dokumenter/My Plugins/TFMC/TLibs</tfmc.builds>
+        <tfmc.gunsandgadgets>D:/Dokumenter/My Plugins/TFMC/GunsAndGadgets</tfmc.gunsandgadgets>
+        <tfmc.cooking>D:/Dokumenter/My Plugins/TFMC/Cooking</tfmc.cooking>
     </properties>
 
     <dependencies>
@@ -73,14 +73,14 @@
             <artifactId>GunsAndGadgets</artifactId>
             <version>1.0.2</version>
             <scope>system</scope>
-            <systemPath>${tfmc.plugins}/gunsandgadgets-1.0.2.jar</systemPath>
+            <systemPath>${tfmc.gunsandgadgets}/gunsandgadgets-1.0.2.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>local</groupId>
             <artifactId>Cooking</artifactId>
             <version>0.1.4</version>
             <scope>system</scope>
-            <systemPath>${tfmc.plugins}/cooking-0.1.4-ALPHA.jar</systemPath>
+            <systemPath>${tfmc.cooking}/cooking-0.1.4-ALPHA.jar</systemPath>
         </dependency>
     </dependencies>
 
