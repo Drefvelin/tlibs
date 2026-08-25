@@ -5,7 +5,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
@@ -15,52 +14,93 @@ import dev.lone.itemsadder.api.CustomFurniture;
 import me.Plugins.TLibs.Objects.TLibAPI;
 import me.Plugins.TLibs.Objects.API.BlockAPI;
 
-public class BlockChecker extends TLibAPI{
+public class BlockChecker extends TLibAPI {
 	public BlockChecker(BlockAPI api) {
 		this.initialize(api.getServer());
 	}
+
 	public boolean checkBlock(Block b, String configPath) {
-    	String type = configPath.split("\\(")[0];
-    	String path = configPath.split("\\(")[1].replace(")", "");
-    	if(type.equalsIgnoreCase("v")) {
-    		if(Material.valueOf(path.toUpperCase()) != null) {
-    			if(b.getType().equals(Material.valueOf(path.toUpperCase()))) return true;
-    		}
-    	} else if(type.equalsIgnoreCase("iaf")) {
-    		return blockIsFurniture(b, path);
-    	} else if(type.equalsIgnoreCase("iab")) {
-    		return blockIsIA(b, path);
-    	}
-    	return false;
-    }
+		if (configPath == null || configPath.isBlank() || b == null) {
+			return false;
+		}
+		String trimmed = configPath.trim();
+
+		int openParen = trimmed.indexOf('(');
+		int closeParen = trimmed.indexOf(')', openParen + 1);
+		if (openParen >= 0 && closeParen > openParen) {
+			String type = trimmed.substring(0, openParen);
+			String path = trimmed.substring(openParen + 1, closeParen);
+			return checkBlockTyped(b, type, path);
+		}
+
+		int dot = trimmed.indexOf('.');
+		if (dot > 0) {
+			String type = trimmed.substring(0, dot);
+			String path = trimmed.substring(dot + 1);
+			return checkBlockTyped(b, type, path);
+		}
+
+		if (trimmed.contains(":")) {
+			return blockIsIA(b, trimmed);
+		}
+
+		return checkVanillaMaterial(b, trimmed);
+	}
+
+	private boolean checkBlockTyped(Block b, String type, String path) {
+		if (type.equalsIgnoreCase("v")) {
+			return checkVanillaMaterial(b, path);
+		}
+		if (type.equalsIgnoreCase("iaf")) {
+			return blockIsFurniture(b, path);
+		}
+		if (type.equalsIgnoreCase("iab") || type.equalsIgnoreCase("ia")) {
+			return blockIsIA(b, path);
+		}
+		return false;
+	}
+
+	private boolean checkVanillaMaterial(Block b, String materialName) {
+		if (materialName == null || materialName.isBlank()) {
+			return false;
+		}
+		try {
+			Material material = Material.valueOf(materialName.trim().toUpperCase());
+			return b.getType() == material;
+		} catch (IllegalArgumentException ex) {
+			return false;
+		}
+	}
+
 	private boolean blockIsFurniture(Block b, String furniture) {
-		if(!b.getType().equals(Material.BARRIER)) return false;
-		if(!(this.getPluginChecker().checkPlugin("ItemsAdder"))) {
+		if (!b.getType().equals(Material.BARRIER)) return false;
+		if (!(this.getPluginChecker().checkPlugin("ItemsAdder"))) {
 			Bukkit.getLogger().info("[TLibs] ERROR! This operation requires ItemsAdder and LoneLibs!");
 			return false;
 		}
 		List<Entity> nearbyEntities = (List<Entity>) b.getWorld().getNearbyEntities(b.getLocation().clone().add(0.5, 0, 0.5), 0.4, 0.4, 0.4);
-		for(Entity a : b.getWorld().getEntities()){
-            if(nearbyEntities.contains(a)){
-				if(!(a instanceof ItemFrame)) continue;
-            	CustomFurniture f = CustomFurniture.byAlreadySpawned(a);
-                if(f != null) {
-                	if((f.getNamespace()+":"+f.getId()).equalsIgnoreCase(furniture)) {
-                		return true;
-                	}
-                }
-            }
-        }
+		for (Entity a : b.getWorld().getEntities()) {
+			if (nearbyEntities.contains(a)) {
+				if (!(a instanceof ItemFrame)) continue;
+				CustomFurniture f = CustomFurniture.byAlreadySpawned(a);
+				if (f != null) {
+					if ((f.getNamespace() + ":" + f.getId()).equalsIgnoreCase(furniture)) {
+						return true;
+					}
+				}
+			}
+		}
 		return false;
 	}
+
 	private boolean blockIsIA(Block b, String path) {
-		if(!(this.getPluginChecker().checkPlugin("ItemsAdder"))) {
+		if (!(this.getPluginChecker().checkPlugin("ItemsAdder"))) {
 			Bukkit.getLogger().info("[TLibs] ERROR! This operation requires ItemsAdder and LoneLibs!");
 			return false;
 		}
 		CustomBlock block = CustomBlock.byAlreadyPlaced(b);
-		if(block != null) {
-			return (block.getNamespace()+":"+block.getId()).equalsIgnoreCase(path);
+		if (block != null) {
+			return (block.getNamespace() + ":" + block.getId()).equalsIgnoreCase(path);
 		}
 		return false;
 	}
