@@ -15,7 +15,10 @@ import me.Plugins.TLibs.Objects.API.ItemAPI;
 import net.tfminecraft.cooking.item.FoodItem;
 
 public class ItemChecker extends TLibAPI{
+	private final ItemAPI itemApi;
+
 	public ItemChecker(ItemAPI api) {
+		this.itemApi = api;
 		this.initialize(api.getServer());
 	}
 	
@@ -60,17 +63,47 @@ public class ItemChecker extends TLibAPI{
 	}
 
 	public boolean checkItemWithPath(ItemStack item, String s) {
+		if (item == null || item.getType().isAir() || s == null || s.isBlank()) {
+			return false;
+		}
 		String type = s.split("\\.")[0]; //v.emerald
+		ItemPathHandler handler = itemApi != null ? itemApi.getPathHandler(type) : null;
+		if (handler != null) {
+			return handler.matches(item, s);
+		}
+		if (s.equalsIgnoreCase("item")) {
+			Material material = item.getType();
+			return material.isItem() && !material.isBlock();
+		}
 		if(type.equalsIgnoreCase("v")) {
-			if(item.getType().equals(Material.valueOf(s.split("\\.")[1].toUpperCase()))) return true;
+			if (isCustomIdentifiedItem(item)) {
+				return false;
+			}
+			String[] parts = s.split("\\.");
+			if (parts.length < 2) {
+				return false;
+			}
+			try {
+				return item.getType().equals(Material.valueOf(parts[1].toUpperCase()));
+			} catch (IllegalArgumentException e) {
+				return false;
+			}
 		} else if(type.equalsIgnoreCase("m")) {
 			if(!(this.getPluginChecker().checkPlugin("MMOItems") && this.getPluginChecker().checkPlugin("MythicLib"))) {
 				Bukkit.getLogger().info("[TLibs] ERROR! This operation requires MMOItems and MythicLib!");
 				return false;
 			}
+			String[] parts = s.split("\\.");
+			if (parts.length < 2) {
+				return false;
+			}
 			NBTItem nbt = NBTItem.get(item);
 			if(!nbt.hasType()) return false;
-			if(nbt.getType().equalsIgnoreCase(s.split("\\.")[1]) && nbt.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(s.split("\\.")[2])) return true;
+			if(!nbt.getType().equalsIgnoreCase(parts[1])) return false;
+			if (parts.length == 2) {
+				return true;
+			}
+			return nbt.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(parts[2]);
 		} else if(type.equalsIgnoreCase("ia")) {
 			if(!(this.getPluginChecker().checkPlugin("ItemsAdder"))) {
 				Bukkit.getLogger().info("[TLibs] ERROR! This operation requires ItemsAdder and LoneLibs!");
@@ -170,7 +203,23 @@ public class ItemChecker extends TLibAPI{
 
 		return false;
 	}
-	
+
+	private boolean isCustomIdentifiedItem(ItemStack item) {
+		if (this.getPluginChecker().checkPlugin("MMOItems") && this.getPluginChecker().checkPlugin("MythicLib")) {
+			NBTItem nbt = NBTItem.get(item);
+			if (nbt.hasType()) {
+				return true;
+			}
+		}
+		if (this.getPluginChecker().checkPlugin("ItemsAdder")) {
+			CustomStack stack = CustomStack.byItemStack(item);
+			if (stack != null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public String getMMOItemsType(ItemStack i) {
 		NBTItem nbt = NBTItem.get(i);
 		if(!nbt.hasType()) return "none";

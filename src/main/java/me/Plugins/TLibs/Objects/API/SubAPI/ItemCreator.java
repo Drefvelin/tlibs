@@ -21,13 +21,32 @@ import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.manager.ItemManager;
 
 public class ItemCreator extends TLibAPI{
+	private final ItemAPI itemApi;
+
 	public ItemCreator(ItemAPI api) {
+		this.itemApi = api;
 		this.initialize(api.getServer());
 	}
 	
 	@SuppressWarnings("deprecation")
 	public ItemStack getItemFromPath(String s) {
-		String type = s.split("\\.")[0]; //v.emerald
+		if (s == null || s.isBlank()) {
+			return null;
+		}
+		if (s.equalsIgnoreCase("item")) {
+			Bukkit.getLogger().info("[TLibs] item is a match-only path (not creation)");
+			return null;
+		}
+		int dot = s.indexOf('.');
+		String type = (dot < 0 ? s : s.substring(0, dot)).toLowerCase(java.util.Locale.ROOT);
+		ItemPathHandler handler = itemApi != null ? itemApi.getPathHandler(type) : null;
+		if (handler != null) {
+			return handler.create(s);
+		}
+		if (type.equals("magic")) {
+			Bukkit.getLogger().info("[TLibs] No handler for path prefix magic");
+			return null;
+		}
 		ItemStack item = new ItemStack(Material.DIRT, 1);
 		if(type.equalsIgnoreCase("v")) {
 			item.setType(Material.valueOf(s.split("\\.")[1].toUpperCase()));
@@ -36,12 +55,17 @@ public class ItemCreator extends TLibAPI{
 				Bukkit.getLogger().info("[TLibs] ERROR! This operation requires MMOItems and MythicLib!");
 				return new ItemStack(Material.DIRT, 1);
 			}
+			String[] parts = s.split("\\.");
+			if (parts.length < 3) {
+				Bukkit.getLogger().info("[TLibs] " + s + " is a type-only MMOItems path (matching only, not creation)");
+				return null;
+			}
 			ItemManager itemManager = MMOItems.plugin.getItems();
-			if(itemManager.getMMOItem(MMOItems.plugin.getTypes().get(s.split("\\.")[1].toUpperCase()), s.split("\\.")[2].toUpperCase()) == null){
+			if(itemManager.getMMOItem(MMOItems.plugin.getTypes().get(parts[1].toUpperCase()), parts[2].toUpperCase()) == null){
 				Bukkit.getLogger().info(s + " ia a malformed item input");
 				return null;
 			}
-			item =  itemManager.getMMOItem(MMOItems.plugin.getTypes().get(s.split("\\.")[1].toUpperCase()), s.split("\\.")[2].toUpperCase()).newBuilder().build(); //m.material.salt
+			item =  itemManager.getMMOItem(MMOItems.plugin.getTypes().get(parts[1].toUpperCase()), parts[2].toUpperCase()).newBuilder().build(); //m.material.salt
 		} else if (type.equalsIgnoreCase("modeled")) {
 			String raw = s.substring(s.indexOf('(') + 1, s.lastIndexOf(')')); // Extract content inside (...)
 			String[] parts = raw.split(";");
