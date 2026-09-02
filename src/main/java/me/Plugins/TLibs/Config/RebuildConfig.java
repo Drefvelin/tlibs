@@ -23,7 +23,7 @@ public final class RebuildConfig {
 		enabled = config.getBoolean(SECTION + ".enabled", true);
 		copyPersistentData = config.getBoolean(SECTION + ".copy-persistent-data", true);
 		copyAppearance = config.getBoolean(SECTION + ".copy-appearance", true);
-		debugNbt = config.getBoolean(SECTION + ".debug-nbt", true);
+		debugNbt = config.getBoolean(SECTION + ".debug-nbt", false);
 
 		List<String> raw = config.getStringList(SECTION + ".preserve-nbt");
 		List<String> filtered = new ArrayList<>();

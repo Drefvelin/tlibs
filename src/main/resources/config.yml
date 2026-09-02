@@ -6,7 +6,7 @@ mmo-item-rebuild:
     - ia
     - amodel
     - itemsadder
-  debug-nbt: true
+  debug-nbt: false
 
 tiered-sockets:
   enabled: true
